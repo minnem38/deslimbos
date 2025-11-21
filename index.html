@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magister Redesign - SSO</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Load Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light gray background */
+        }
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Custom scrollbar for better aesthetics */
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollable-content::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Main Content Area -->
+        <div id="app-container" class="w-full max-w-7xl mx-auto p-4 md:p-8">
+            <!-- Loading and Initial State -->
+            <div id="loading-view" class="flex justify-center items-center h-96">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+            </div>
+
+            <!-- Login View -->
+            <div id="login-view" class="hidden min-h-[70vh] flex justify-center items-center">
+                <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm text-center transform transition duration-500 hover:scale-[1.01]">
+                    <div class="text-4xl text-indigo-600 mb-4">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">Welcome to your Portal</h1>
+                    <p class="text-gray-500 mb-8">Sign in with your school Microsoft account to continue.</p>
+                    <button id="ms-sign-in-button" class="w-full flex items-center justify-center bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 ease-in-out">
+                        <i class="fab fa-microsoft mr-3 text-lg"></i>
+                        Sign in with Microsoft
+                    </button>
+                    <p id="auth-error-message" class="text-red-500 text-sm mt-4 hidden"></p>
+                </div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="hidden">
+                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b border-gray-200 mb-6">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-gray-900">
+                            My School Dashboard
+                        </h1>
+                        <p id="user-greeting" class="text-gray-500 mt-1"></p>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                         <!-- Display user ID for sharing/support -->
+                         <span id="user-id-display" class="text-xs font-mono text-gray-500 p-1 bg-gray-100 rounded"></span>
+
+                        <button id="sign-out-button" class="bg-red-500 text-white font-medium py-2 px-4 rounded-lg text-sm shadow-md hover:bg-red-600 transition duration-150">
+                            Sign Out
+                        </button>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Sidebar Navigation (Hidden/collapsed on small screens) -->
+                    <nav class="lg:col-span-1 p-6 bg-white rounded-xl shadow-lg h-full">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Navigation</h2>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="flex items-center p-3 text-indigo-700 bg-indigo-50 rounded-lg font-medium hover:bg-indigo-100 transition duration-150"><i class="fas fa-home w-5 mr-3"></i>Dashboard</a></li>
+                            <li><a href="#" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-150"><i class="fas fa-calendar-alt w-5 mr-3"></i>Schedule (Mock)</a></li>
+                            <li><a href="#" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-150"><i class="fas fa-graduation-cap w-5 mr-3"></i>Grades (Mock)</a></li>
+                            <li><a href="#" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-150"><i class="fas fa-envelope w-5 mr-3"></i>Messages (Mock)</a></li>
+                        </ul>
+                    </nav>
+
+                    <!-- Main Content Panel -->
+                    <main class="lg:col-span-2 space-y-8 scrollable-content">
+
+                        <!-- Quick Overview Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                                <p class="text-sm font-medium text-gray-500">Upcoming Homework</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-1">3</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                                <p class="text-sm font-medium text-gray-500">Average Grade</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-1">7.8</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+                                <p class="text-sm font-medium text-gray-500">Unread Messages</p>
+                                <p class="text-2xl font-bold text-gray-900 mt-1">2</p>
+                            </div>
+                        </div>
+
+                        <!-- Real-time data card from Firestore -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                                <i class="fas fa-bullhorn mr-3 text-indigo-600"></i>
+                                Announcement for You
+                            </h3>
+                            <p id="firestore-message" class="text-gray-600 italic">Fetching user data...</p>
+                        </div>
+
+                        <!-- Mock Schedule Card -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                                <i class="fas fa-clock mr-3 text-indigo-600"></i>
+                                Today's Schedule
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="p-3 bg-gray-50 rounded-lg border-l-4 border-indigo-400">
+                                    <p class="font-medium">09:00 - 09:45 | Mathematics</p>
+                                    <p class="text-sm text-gray-500">Room A2.01 - Teacher J. Jansen</p>
+                                </li>
+                                <li class="p-3 bg-gray-50 rounded-lg border-l-4 border-indigo-400">
+                                    <p class="font-medium">09:45 - 10:30 | English Literature</p>
+                                    <p class="text-sm text-gray-500">Room A2.04 - Teacher M. Peters</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged, 
+            signInWithPopup, 
+            signOut,
+            OAuthProvider 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            onSnapshot, 
+            setDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Set Firebase logging for debugging purposes
+        setLogLevel('debug'); 
+
+        // --- GLOBAL VARIABLES (Mandatory Canvas Globals) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-magister-redesign';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db = null;
+        let auth = null;
+        let unsubscribeFirestore = null; // For managing the real-time listener
+
+        // --- DOM Elements ---
+        const loadingView = document.getElementById('loading-view');
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const msSignInButton = document.getElementById('ms-sign-in-button');
+        const signOutButton = document.getElementById('sign-out-button');
+        const userGreeting = document.getElementById('user-greeting');
+        const firestoreMessage = document.getElementById('firestore-message');
+        const authErrorMessage = document.getElementById('auth-error-message');
+        const userIdDisplay = document.getElementById('user-id-display');
+
+
+        // --- UTILITY FUNCTIONS ---
+
+        /**
+         * Converts milliseconds to seconds for exponential backoff logic.
+         * @param {number} ms - The delay in milliseconds.
+         * @returns {number} The delay in seconds.
+         */
+        const msToS = (ms) => Math.floor(ms / 1000);
+
+        /**
+         * Implements exponential backoff for retrying failed API calls.
+         * @param {Function} fn - The function to execute.
+         * @param {Array} args - Arguments for the function.
+         * @param {number} maxRetries - Maximum number of retries.
+         * @param {number} delay - Initial delay in milliseconds.
+         * @param {number} attempt - Current attempt number.
+         * @returns {Promise<any>} The result of the function.
+         */
+        const withExponentialBackoff = async (fn, args = [], maxRetries = 5, delay = 1000, attempt = 0) => {
+            try {
+                return await fn(...args);
+            } catch (error) {
+                if (attempt >= maxRetries) {
+                    throw error;
+                }
+                const backoffDelay = delay * Math.pow(2, attempt) + Math.floor(Math.random() * 1000);
+                // console.debug(`Attempt ${attempt + 1} failed. Retrying in ${msToS(backoffDelay)}s...`, error); // Do not log retries as errors
+                await new Promise(resolve => setTimeout(resolve, backoffDelay));
+                return withExponentialBackoff(fn, args, maxRetries, delay, attempt + 1);
+            }
+        };
+
+        // --- FIREBASE AUTHENTICATION & UI MANAGEMENT ---
+
+        /**
+         * Sets up the real-time data listener for the dashboard.
+         * @param {string} userId - The current authenticated user ID.
+         */
+        const setupFirestoreListener = (userId) => {
+            // Unsubscribe existing listener if present
+            if (unsubscribeFirestore) {
+                unsubscribeFirestore();
+            }
+            
+            // Path: /artifacts/{appId}/users/{userId}/dashboard_data/announcement_doc
+            const docPath = `/artifacts/${appId}/users/${userId}/dashboard_data/announcement_doc`;
+            const userDocRef = doc(db, docPath);
+
+            // Optional: Initialize the document if it doesn't exist (for demonstration)
+            // In a real app, this would be handled by a backend process or initial user setup.
+            setDoc(userDocRef, {
+                lastLogin: new Date().toISOString(),
+                announcement: "Your next exam is scheduled for 'Nederlands' on Friday.",
+                // Ensure this is set only if it's new
+            }, { merge: true }).catch(console.error); 
+
+            // Set up real-time listener
+            unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    firestoreMessage.textContent = data.announcement || "No specific announcements for you today.";
+                    firestoreMessage.classList.remove('italic');
+                } else {
+                    firestoreMessage.textContent = "No personal announcement data found. Data structure initialized.";
+                    firestoreMessage.classList.add('italic');
+                }
+            }, (error) => {
+                console.error("Firestore snapshot error:", error);
+                firestoreMessage.textContent = "Error fetching announcements. Check console for details.";
+                firestoreMessage.classList.add('text-red-500');
+            });
+        };
+
+        /**
+         * Updates the UI based on the authentication state.
+         * @param {object | null} user - The Firebase User object or null.
+         */
+        const updateUI = (user) => {
+            loadingView.classList.add('hidden');
+            if (user) {
+                // User is signed in
+                loginView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+
+                const name = user.displayName || 'Student';
+                const email = user.email || 'No email available';
+                
+                userGreeting.textContent = `Welcome back, ${name} (${email}).`;
+                userIdDisplay.textContent = `User ID: ${user.uid}`;
+                
+                // Start listening to the user's private data
+                setupFirestoreListener(user.uid);
+
+            } else {
+                // User is signed out
+                if (unsubscribeFirestore) {
+                    unsubscribeFirestore();
+                    unsubscribeFirestore = null;
+                }
+                dashboardView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                userGreeting.textContent = '';
+                userIdDisplay.textContent = '';
+                firestoreMessage.textContent = 'Fetching user data...';
+            }
+        };
+
+        /**
+         * Initializes Firebase and sets up the authentication listener.
+         */
+        const initFirebase = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // 1. Handle initial custom token sign-in (Canvas environment)
+                if (initialAuthToken) {
+                    await withExponentialBackoff(signInWithCustomToken, [auth, initialAuthToken]);
+                } else {
+                    // Fallback to anonymous sign-in if no custom token is provided
+                    await withExponentialBackoff(signInAnonymously, [auth]);
+                }
+
+                // 2. Set up the persistent auth state listener
+                onAuthStateChanged(auth, updateUI);
+
+                // 3. Set up the Microsoft Sign-in handler
+                msSignInButton.addEventListener('click', handleMicrosoftSignIn);
+                signOutButton.addEventListener('click', handleSignOut);
+
+            } catch (error) {
+                console.error("Firebase initialization or initial sign-in failed:", error);
+                loadingView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                authErrorMessage.textContent = `Initialization Error: ${error.message}. Please ensure Firebase is configured correctly.`;
+                authErrorMessage.classList.remove('hidden');
+            }
+        };
+
+        /**
+         * Handles the Microsoft OAuth sign-in flow.
+         */
+        const handleMicrosoftSignIn = async () => {
+            msSignInButton.disabled = true;
+            authErrorMessage.classList.add('hidden');
+            
+            // Create an OAuth provider for Microsoft.
+            // NOTE: You MUST enable 'Microsoft' in your Firebase console under Authentication > Sign-in method.
+            const provider = new OAuthProvider('microsoft.com');
+
+            try {
+                // Sign in using a popup window
+                await withExponentialBackoff(signInWithPopup, [auth, provider]);
+                // updateUI is called automatically by onAuthStateChanged
+            } catch (error) {
+                let message = "Microsoft Sign-in failed. Please try again.";
+                console.error("Microsoft Sign-in Error:", error);
+
+                if (error.code === 'auth/popup-closed-by-user') {
+                    message = "Sign-in window closed. Please complete the sign-in.";
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                     message = "Another sign-in attempt is already in progress. Wait a moment and try again.";
+                } else if (error.code === 'auth/account-exists-with-different-credential') {
+                    message = "An account with this email already exists using a different sign-in method.";
+                }
+                
+                authErrorMessage.textContent = message;
+                authErrorMessage.classList.remove('hidden');
+            } finally {
+                msSignInButton.disabled = false;
+            }
+        };
+
+        /**
+         * Handles the sign-out process.
+         */
+        const handleSignOut = async () => {
+            try {
+                await withExponentialBackoff(signOut, [auth]);
+            } catch (error) {
+                console.error("Sign out error:", error);
+            }
+        };
+
+        // --- START THE APPLICATION ---
+        window.onload = initFirebase;
+    </script>
+</body>
+</html>
